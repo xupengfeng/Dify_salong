@@ -10,6 +10,8 @@ GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salo
 
 当前已完成方案归档、复现记录框架及本机环境的只读审核，并形成[本机环境审核与部署方案](docs/local-environment-and-deployment-plan.md)。本机有条件适合单人、小语料实验；Docker 引擎尚未运行，尚未部署 Dify、生成实验语料、执行检索实验或验证工作流。下一步先在本机搭建环境并完成实验，实验顺利结束后再在远程服务器搭建课题组共享环境。
 
+2026-10-31 已确定模型来源：课题组模型平台（OpenAI 兼容公网接口），LLM 用 `deepseek-flash` / `deepseek-v4-pro`，Embedding 用 `BAAI/bge-m3`；平台无 Rerank 模型，知识库调优组改用混合检索权重模式。阶段零的配置样例与脚本已放入 [deploy/](deploy/README.md)，仅完成静态校验，尚未在本机执行。
+
 原方案中的“已经部署”“已完成实验”等文字属于后续阶段提示词的背景模板，不代表本仓库已有运行成果。本轮没有安装软件、启动服务、拉取镜像或修改 Docker/WSL 配置。
 
 航空工艺语料计划采用教学合成数据。其材料参数、标准代号与检验条款不能直接作为真实生产的受控工艺依据。
@@ -18,7 +20,7 @@ GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salo
 
 | 阶段 | 主要工作 | 后续应保存的成果 |
 | --- | --- | --- |
-| 0：环境与模型 | 先在本机部署固定版本并接入 LLM、Embedding、Rerank，完成最小验证；远程共享环境待本机实验顺利结束后搭建 | 本机部署方案、版本与资源记录、脱敏配置、模型接入记录；后续远程复现与迁移说明 |
+| 0：环境与模型 | 先在本机部署固定版本并接入 LLM、Embedding（平台无 Rerank），完成最小验证；远程共享环境待本机实验顺利结束后搭建 | 本机部署方案、版本与资源记录、脱敏配置、模型接入记录；后续远程复现与迁移说明 |
 | 1：语料治理 | 构建原始合成语料，清洗表格并设计分段 | 原始与清洗语料、转换脚本、数据说明与文件哈希 |
 | 2：检索对照 | 比较知识库 A 与 B 的召回效果 | 全部参数、黄金题及依据、实际召回结果、截图与失败案例 |
 | 3：问答编排 | 实现意图分类、术语改写、检索、判空、生成与兜底 | 工作流 DSL、节点提示词、变量绑定与导入说明 |
@@ -32,6 +34,7 @@ GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salo
 - [原始实施方案](dify.md)：保留原方案内容，作为后续实施的来源。
 - [方案分析与待确认事项](docs/plan-review.md)：记录实施前需要明确的文本缺口和证据边界。
 - [本机环境审核与部署方案](docs/local-environment-and-deployment-plan.md)：记录 2026-10-31 的只读审核结果、本机先行路径及后续远程重建方案，尚未执行部署。
+- [阶段零部署配置](deploy/README.md)：Dify 1.18.0 本机 `.env` 生成脚本、仅本机端口 override、模型连通性脚本及操作步骤。
 - [复现记录模板](docs/reproduction-template.md)：每阶段、每次关键实验复制后填写；占位字段不算完成记录。
 
 ## 后续目录约定
