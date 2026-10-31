@@ -1,0 +1,28 @@
+# Actual environment files; keep sanitized examples versioned.
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+
+# Private key / credential containers.
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Python and Node local dependencies / caches.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+
+# Local-only runtime and virtual environments at repository root.
+/.local/
+/.venv/
+/venv/
