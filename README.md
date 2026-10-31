@@ -8,11 +8,11 @@ GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salo
 
 ## 当前状态
 
-当前已完成方案归档、复现记录框架及本机环境的只读审核，并形成[本机环境审核与部署方案](docs/local-environment-and-deployment-plan.md)。本机有条件适合单人、小语料实验；Docker 引擎尚未运行，尚未部署 Dify、生成实验语料、执行检索实验或验证工作流。下一步先在本机搭建环境并完成实验，实验顺利结束后再在远程服务器搭建课题组共享环境。
+本机 Dify 1.18.0 基础服务已运行，管理员已初始化并登录，本机入口为 `http://localhost:8080`。模型凭据配置、真实 LLM/Embedding 调用及最小知识库与 Chatflow 验收尚未完成；实际证据见[本机部署执行记录](docs/runs/2026-10-31-local-deployment.md)。先在本机完成实验，实验顺利结束后再在远程服务器搭建课题组共享环境。
 
-2026-10-31 已确定模型来源：课题组模型平台（OpenAI 兼容公网接口），LLM 用 `deepseek-flash` / `deepseek-v4-pro`，Embedding 用 `BAAI/bge-m3`；平台无 Rerank 模型，知识库调优组改用混合检索权重模式。阶段零的配置样例与脚本已放入 [deploy/](deploy/README.md)，仅完成静态校验，尚未在本机执行。
+2026-10-31 已确定模型来源：课题组模型平台（OpenAI 兼容公网接口），计划采用 LLM `deepseek-flash` / `deepseek-v4-pro`、Embedding `BAAI/bge-m3`；平台无 Rerank 模型，知识库调优组改用混合检索权重模式。阶段零的配置样例与步骤见 [deploy/](deploy/README.md)，基础部署已实际执行，模型接入仍待完成。
 
-原方案中的“已经部署”“已完成实验”等文字属于后续阶段提示词的背景模板，不代表本仓库已有运行成果。本轮没有安装软件、启动服务、拉取镜像或修改 Docker/WSL 配置。
+原方案中的“已经部署”“已完成实验”等文字属于后续阶段提示词的背景模板，具体完成范围以运行记录为准。当前尚未完成实验语料构建、A/B 检索对照或完整问答工作流验证。
 
 航空工艺语料计划采用教学合成数据。其材料参数、标准代号与检验条款不能直接作为真实生产的受控工艺依据。
 
@@ -33,8 +33,9 @@ GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salo
 
 - [原始实施方案](dify.md)：保留原方案内容，作为后续实施的来源。
 - [方案分析与待确认事项](docs/plan-review.md)：记录实施前需要明确的文本缺口和证据边界。
-- [本机环境审核与部署方案](docs/local-environment-and-deployment-plan.md)：记录 2026-10-31 的只读审核结果、本机先行路径及后续远程重建方案，尚未执行部署。
+- [本机环境审核与部署方案](docs/local-environment-and-deployment-plan.md)：保留部署前的只读审核、本机先行路径及后续远程重建方案；执行结果另见运行记录。
 - [阶段零部署配置](deploy/README.md)：Dify 1.18.0 本机 `.env` 生成脚本、仅本机端口 override、模型连通性脚本及操作步骤。
+- [本机部署执行记录](docs/runs/2026-10-31-local-deployment.md)：实际版本、完整镜像清单、基础服务及管理员状态，以及模型和最小验收的待办边界。
 - [复现记录模板](docs/reproduction-template.md)：每阶段、每次关键实验复制后填写；占位字段不算完成记录。
 
 ## 后续目录约定
