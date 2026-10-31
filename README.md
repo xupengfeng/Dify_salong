@@ -2,7 +2,7 @@
 
 基于 Dify 搭建航空制造场景智能知识库问答工作流的技术沙龙实施与复现记录仓库。
 
-GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salong)（私有仓库，默认分支 `main`）。
+GitHub 仓库：[xupengfeng/Dify_salong](https://github.com/xupengfeng/Dify_salong)（公开仓库，默认分支 `main`）。
 
 项目面向课题组研发人员，通过知识库数据治理、检索对照和工作流编排，训练研发工程能力、业务分析师（BA）的数据与流程建模能力，以及产品经理（PM）的需求边界和交付闭环意识。完整目标与阶段提示词见[原始实施方案](dify.md)。
 
