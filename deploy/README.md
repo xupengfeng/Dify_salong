@@ -7,7 +7,7 @@
 | 文件 | 用途 |
 | --- | --- |
 | `prepare-env.sh` | 由 1.18.0 官方 `.env.example` 生成本地 `.env`，写入本项目差异项并生成随机认证值 |
-| `docker-compose.override.yaml` | 将 nginx、插件调试端口完全替换为仅绑定 `127.0.0.1` |
+| `docker-compose.override.yaml` | 固定项目组名为 `dify`；将 nginx、插件调试端口完全替换为仅绑定 `127.0.0.1`，并将本机默认服务设为 `restart: "no"`，按需手动启动 |
 | `check-models.sh` | 用 curl 验证课题组模型平台的 LLM 与 Embedding 接口 |
 
 ## 固定版本
@@ -58,7 +58,7 @@
    cd dify/docker
    ```
 
-3. **生成 `.env` 并放置端口 override**：
+3. **生成 `.env` 并放置本机 override**（仅本机端口、手动启动）：
 
    ```bash
    bash /mnt/e/Dify_salong/deploy/prepare-env.sh
@@ -71,17 +71,17 @@
    docker compose config --format json | python3 -c 'import json,sys; d=json.load(sys.stdin); [print(n, "%s:%s->%s" % (p.get("host_ip","0.0.0.0"), p.get("published"), p.get("target"))) for n,s in d["services"].items() for p in s.get("ports",[])]'
    ```
 
-5. **拉取镜像并启动**，记录实际镜像与 digest：
+5. **首次拉取镜像并手动启动**，记录实际镜像与 digest：
 
    ```bash
    docker compose pull
-   docker compose up -d
+   docker compose up -d --pull never
    docker compose ps
    docker compose images
    docker image inspect --format '{{index .RepoTags 0}} {{index .RepoDigests 0}}' $(docker compose images -q) 2>/dev/null
    ```
 
-   `init_permissions` 正常完成后退出属于预期。若服务未就绪，只查看相关服务日志，例如 `docker compose logs --tail 100 api`。
+   本机 override 将默认启用的 16 个服务设为 `restart: "no"`：打开 Docker Desktop 不会自动启动 Dify，运行中的服务异常退出后也不会自行重启，需要手动恢复。`init_permissions` 正常完成后退出属于预期。若服务未就绪，只查看相关服务日志，例如 `docker compose logs --tail 100 api`。
 
 6. **核对配置实际生效**：
 
@@ -116,11 +116,35 @@
 
 当前运行目录为 Ubuntu 的 `/root/dify-salong/runtime/dify/docker`。已有完整镜像后，在该目录使用 `docker compose up -d --pull never` 启动，避免再次拉取并命中本机已有加速器。镜像下载错误与逐镜像显式官方引用的恢复经过见[实际运行记录](../docs/runs/2026-10-31-local-deployment.md)，没有修改全局代理或镜像源。
 
+日常使用无需输入命令，直接通过 Docker Desktop 启停已有容器：
+
+1. 打开 Docker Desktop，等待引擎就绪，进入 **Containers（容器）** 页面。
+2. 找到 Dify 所属的 Compose 项目组 **`dify`**；展开后可看到 `api`、`web`、`db_postgres`、`weaviate` 等服务。
+3. 点击 **`dify` 整个项目组右侧的 ▶（Start / 启动）**，等待服务启动后访问 `http://localhost:8080`。使用项目组按钮，无需逐个启动容器。
+4. 使用完毕后，点击该项目组右侧的 **■（Stop / 停止）**，保留容器和数据供下次使用。
+
+项目组由 override 中的 `name: dify` 固定。Compose 项目名要求小写，因此 Dify 在 Docker Desktop 中显示为 `dify`。本机从原 `docker` 项目组更名后保持停止，使用时点击 `dify` 的 ▶ 即可。
+
+本机更名保留原有挂载数据：运行目录中的 `docker-compose.local-volumes.yaml` 以 `external: true` 引用原来的 6 个命名/匿名卷；同目录 `.env` 中的 `COMPOSE_FILE` 指向 `docker-compose.yaml`、`docker-compose.override.yaml`、`docker-compose.local-volumes.yaml` 三个文件的绝对路径（冒号分隔），使后续 Compose 操作继续加载这些引用。这两项本机迁移配置必须保留，实际 `.env` 仍不入库。新环境无需创建此迁移文件，也无需添加该 `COMPOSE_FILE` 配置。
+
+需要从命令行启动或应用 Compose 配置变更时，也可在 Windows PowerShell 中执行：
+
+```powershell
+# 启动 Dify
+wsl -d Ubuntu-22.04 -u root --cd /root/dify-salong/runtime/dify/docker --exec docker compose up -d --pull never
+
+# 停止 Dify，保留容器和数据
+wsl -d Ubuntu-22.04 -u root --cd /root/dify-salong/runtime/dify/docker --exec docker compose stop
+```
+
+运行目录中的 override 与本仓库保持一致后，后续重新创建容器仍采用 `restart: "no"`。关闭再打开 Docker Desktop 时，Dify 保持停止；需要使用时点击项目组的启动按钮即可。
+
 部分服务没有 Docker healthcheck，不能将整个 stack 的 `--wait` 结果直接当成应用可用性结论；本次另以容器状态、实际 HTTP 与浏览器登录确认基础服务。模型和 GSE 真实召回仍需按第 7–8 步验证。
 
 ## 停止与清理
 
-- 停止：`docker compose down`（保留数据卷，可再次 `up -d`）。
+- 日常停止：在 Docker Desktop 的 Containers 页面点击 `dify` 项目组的 ■，或在运行目录执行 `docker compose stop`；保留容器和数据，下次点击项目组的 ▶ 启动。
+- 需要移除容器与网络时才执行 `docker compose down`（保留数据卷）。
 - 不要随意执行 `docker compose down -v` 或删除 `volumes/`：会清空数据库、向量库、上传文件和自动生成的 `SECRET_KEY`。
 
 ## 静态校验记录（2026-10-31，云端环境，非本机）

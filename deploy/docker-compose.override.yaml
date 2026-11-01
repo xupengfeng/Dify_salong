@@ -1,9 +1,10 @@
-# Dify_salong 本机实验端口覆盖（适用 Dify 1.18.0，commit 50abea97062110044f15d0e03ccecadd9ccc87ca）
+# Dify_salong 本机实验覆盖（适用 Dify 1.18.0，commit 50abea97062110044f15d0e03ccecadd9ccc87ca）
 #
-# 用途：把官方 Compose 中面向所有网卡发布的端口，完全替换为仅绑定 127.0.0.1。
+# 用途：仅绑定 127.0.0.1，并将本机默认启用的 16 个服务设为手动启动。
 # 放置位置：复制到 Dify 源码的 docker/ 目录，与官方 docker-compose.yaml 同级。
 #   docker compose 会自动合并同目录的 docker-compose.override.yaml。
-# 校验：docker compose config 后检查 nginx / plugin_daemon 的 ports 仅含 host_ip: 127.0.0.1。
+# 校验：docker compose config 后检查端口仅绑定 127.0.0.1，以下服务 restart 均为 "no"。
+# restart: "no" 禁止随 Docker Desktop 自动启动；运行中异常退出也需手动恢复。
 #
 # 1.18.0 默认拓扑中只有以下两个服务发布宿主机端口：
 #   nginx:         80、443
@@ -11,11 +12,58 @@
 # 本机不启用 HTTPS，因此不发布 443。
 # `!override` 需要 Docker Compose >= 2.24.4（本机 2.38.2）。
 
+# 固定 Docker Desktop 中的项目组名称；Compose 项目名必须使用小写。
+name: dify
+
 services:
+  agent_backend:
+    restart: "no"
+
+  agent_ssrf_proxy:
+    restart: "no"
+
+  api:
+    restart: "no"
+
+  api_websocket:
+    restart: "no"
+
+  db_postgres:
+    restart: "no"
+
+  init_permissions:
+    restart: "no"
+
+  local_sandbox:
+    restart: "no"
+
   nginx:
+    restart: "no"
     ports: !override
       - "127.0.0.1:${EXPOSE_NGINX_PORT:-8080}:${NGINX_PORT:-80}"
 
   plugin_daemon:
+    restart: "no"
     ports: !override
       - "127.0.0.1:${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}:${PLUGIN_DEBUGGING_PORT:-5003}"
+
+  redis:
+    restart: "no"
+
+  sandbox:
+    restart: "no"
+
+  ssrf_proxy:
+    restart: "no"
+
+  weaviate:
+    restart: "no"
+
+  web:
+    restart: "no"
+
+  worker:
+    restart: "no"
+
+  worker_beat:
+    restart: "no"
